@@ -11,11 +11,11 @@ export const url = mysqlTable('url', {
   id: varchar('id', { length: 36 }).primaryKey().notNull(),
   original: text('original').notNull(),
   short: varchar('short', { length: 6 }).unique().notNull(),
-  userId: varchar('user_id', { length: 36 }).references(() => user.id, {
+  userId: varchar('userId', { length: 36 }).references(() => user.id, {
     onDelete: 'set null',
   }),
   clicks: int('clicks').default(0).notNull(),
-  createdAt: timestamp('created_at').defaultNow().notNull(),
-  updatedAt: timestamp('updated_at').defaultNow().notNull(),
-  deletedAt: timestamp('deleted_at'),
+  createdAt: timestamp('createdAt').defaultNow().notNull(),
+  updatedAt: timestamp('updatedAt').defaultNow().notNull(),
+  deletedAt: timestamp('deletedAt'),
 });
