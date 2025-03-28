@@ -1,9 +1,9 @@
 export type UrlDto = {
-  id: string;
+  id?: string;
   original: string;
   short: string;
   clicks: number;
-  createdAt: Date;
-  updatedAt: Date;
-  deletedAt?: Date;
+  createdAt?: Date;
+  updatedAt?: Date;
+  deletedAt?: Date | null;
 };
