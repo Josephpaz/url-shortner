@@ -2,6 +2,7 @@ export interface EntityMetadata {
   id: string;
   createdAt: Date;
   updatedAt: Date;
+  deletedAt?: Date;
 }
 
 export abstract class Entity<T> {
@@ -9,12 +10,14 @@ export abstract class Entity<T> {
   private readonly _id?: string;
   private readonly _createdAt?: Date;
   private readonly _updatedAt?: Date;
+  private readonly _deletedAt?: Date;
 
   constructor(props: T, metadata?: EntityMetadata) {
     this.props = props;
     this._id = metadata?.id;
     this._createdAt = metadata?.createdAt;
     this._updatedAt = metadata?.updatedAt;
+    this._deletedAt = metadata?.deletedAt;
   }
 
   get id() {
@@ -27,5 +30,9 @@ export abstract class Entity<T> {
 
   get updatedAt() {
     return this._updatedAt;
+  }
+
+  get deletedAt() {
+    return this._deletedAt;
   }
 }
