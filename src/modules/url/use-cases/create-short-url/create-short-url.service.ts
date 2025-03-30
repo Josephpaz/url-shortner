@@ -10,7 +10,7 @@ import { User } from 'src/modules/user/domain/user.entity';
 
 type Input = CreateUrlDto & { userId?: string };
 type Result = {
-  type: 'CreateShortUrlSuccess';
+  type: 'CreateShortUrlSuccess' | 'UrlAlreadyExists';
   data: Url;
 };
 
@@ -28,6 +28,13 @@ export class CreateShortUrlService implements UseCase<Input, Result> {
 
     let user: User | undefined = undefined;
     if (userId) user = await this.userRepository.findByOrThrow({ id: userId });
+
+    const urlExists = await this.urlRepository.verifyIfExists({
+      original: url,
+      userId: user?.id,
+    });
+
+    if (urlExists) return { type: 'UrlAlreadyExists', data: urlExists };
 
     const urlEntity = Url.create({
       user: user,

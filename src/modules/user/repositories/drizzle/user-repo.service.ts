@@ -10,7 +10,9 @@ import * as schema from '../../../../db/schema';
 import { User } from '../../domain/user.entity';
 import { randomUUID } from 'crypto';
 import { UserMapper } from '../../mappers';
-import { eq } from 'drizzle-orm';
+import { and, eq, isNull } from 'drizzle-orm';
+import { Url } from 'src/modules/url/domain/url.entity';
+import { UrlMapper } from 'src/modules/url/mappers/url.mapper';
 
 @Injectable()
 export class UserRepoService implements IUserRepository {
@@ -63,5 +65,15 @@ export class UserRepoService implements IUserRepository {
     }
 
     return user;
+  }
+
+  async findUrls(id: string): Promise<Url[]> {
+    const userUrls = await this.drizzleService
+      .select()
+      .from(schema.user)
+      .innerJoin(schema.url, eq(schema.url.userId, schema.user.id))
+      .where(and(eq(schema.user.id, id), isNull(schema.url.deletedAt)));
+
+    return userUrls.map(({ url }) => UrlMapper.toDomain(url));
   }
 }

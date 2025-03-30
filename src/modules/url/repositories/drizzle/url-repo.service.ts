@@ -5,11 +5,15 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { Url } from '../../domain/url.entity';
-import { FindByUniqueUrlModel, IUrlRepository } from '../url-repo.interface';
+import {
+  FindByUniqueUrlModel,
+  IUrlRepository,
+  VerifyIfExistsParams,
+} from '../url-repo.interface';
 import * as schema from '../../../../db/schema';
 import { MySql2Database } from 'drizzle-orm/mysql2';
 import { UrlMapper } from '../../mappers/url.mapper';
-import { eq } from 'drizzle-orm';
+import { and, eq, isNull } from 'drizzle-orm';
 import { randomUUID } from 'crypto';
 
 @Injectable()
@@ -72,5 +76,20 @@ export class UrlRepoService implements IUrlRepository {
     }
 
     return url;
+  }
+
+  async verifyIfExists(params: VerifyIfExistsParams): Promise<Url | null> {
+    const url = await this.drizzleService
+      .select()
+      .from(schema.url)
+      .where(
+        and(
+          eq(schema.url.original, params.original),
+          params.userId ? eq(schema.url.userId, params.userId) : undefined,
+          isNull(schema.url.deletedAt),
+        ),
+      );
+
+    return url.length !== 1 ? null : UrlMapper.toDomain(url[0]);
   }
 }
