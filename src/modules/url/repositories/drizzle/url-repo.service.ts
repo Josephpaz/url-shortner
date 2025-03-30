@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { Url } from '../../domain/url.entity';
-import { IUrlRepository } from '../url-repo.interface';
+import { FindByUniqueUrlModel, IUrlRepository } from '../url-repo.interface';
 import * as schema from '../../../../db/schema';
 import { MySql2Database } from 'drizzle-orm/mysql2';
 import { UrlMapper } from '../../mappers/url.mapper';
@@ -35,5 +35,23 @@ export class UrlRepoService implements IUrlRepository {
     const record = UrlMapper.toDomain(urlInserted[0]);
 
     return record;
+  }
+
+  async findBy(params: FindByUniqueUrlModel): Promise<Url> {
+    const [key] = Object.keys(params) as ('id' | 'short')[];
+
+    const column = schema.url[key];
+    const value = params[key] as string;
+
+    const [urlResult] = await this.drizzleService
+      .select()
+      .from(schema.url)
+      .where(eq(column, value));
+
+    if (!urlResult) {
+      throw new Error('URL not found');
+    }
+
+    return UrlMapper.toDomain(urlResult);
   }
 }
