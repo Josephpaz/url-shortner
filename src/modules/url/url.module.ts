@@ -4,6 +4,7 @@ import { UrlRepoService } from './repositories/drizzle/url-repo.service';
 import { CreateShortUrlService } from './use-cases/create-short-url/create-short-url.service';
 import { CreateShortUrlController } from './use-cases/create-short-url/create-short-url.controller';
 import { GetShortUrlService } from './use-cases/get-short-url/get-short-url.service';
+import { GetShortUrlController } from './use-cases/get-short-url/get-short-url.controller';
 
 @Module({
   imports: [DrizzleModule],
@@ -16,6 +17,6 @@ import { GetShortUrlService } from './use-cases/get-short-url/get-short-url.serv
     CreateShortUrlService,
     GetShortUrlService,
   ],
-  controllers: [CreateShortUrlController],
+  controllers: [CreateShortUrlController, GetShortUrlController],
 })
 export class UrlModule {}
