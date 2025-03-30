@@ -25,6 +25,7 @@ export class UrlRepoService implements IUrlRepository {
 
       await this.drizzleService.insert(schema.url).values({
         id: uuid,
+        userId: url.user?.id,
         original: url.original,
         short: url.short,
         clicks: url.clicks,
@@ -55,9 +56,12 @@ export class UrlRepoService implements IUrlRepository {
     const [urlResult] = await this.drizzleService
       .select()
       .from(schema.url)
+      .leftJoin(schema.user, eq(schema.user.id, schema.url.userId))
       .where(eq(column, value));
 
-    return urlResult ? UrlMapper.toDomain(urlResult) : null;
+    return urlResult
+      ? UrlMapper.toDomain({ ...urlResult.url, user: urlResult.user })
+      : null;
   }
 
   async findByOrThrow(params: FindByUniqueUrlModel): Promise<Url> {

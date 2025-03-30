@@ -8,7 +8,7 @@ import { CreateUserController } from './use-cases/create-user/create-user.contro
   imports: [DrizzleModule],
   providers: [
     UserRepoService,
-    { provide: 'IUserRepository', useExisting: UserRepoService },
+    { provide: 'UserRepo', useExisting: UserRepoService },
     CreateUserService,
   ],
   controllers: [CreateUserController],
