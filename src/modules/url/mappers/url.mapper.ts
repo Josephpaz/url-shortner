@@ -1,7 +1,7 @@
 import { InferSelectModel } from 'drizzle-orm';
 import { url } from '../../../db/schema';
 import { Url } from '../domain/url.entity';
-import { UrlDto } from '../dto/url.dto';
+import { UrlDto } from '../dtos/url.dto';
 
 export class UrlMapper {
   static toDomain(raw: InferSelectModel<typeof url>): Url {
