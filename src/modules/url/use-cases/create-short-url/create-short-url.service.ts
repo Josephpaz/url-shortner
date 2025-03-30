@@ -4,6 +4,7 @@ import { CreateUrlDto } from '../../dtos/create-url.dto';
 import { Url } from '../../domain/url.entity';
 import { IUrlRepository } from '../../repositories/url-repo.interface';
 import { nanoid } from 'nanoid';
+import 'dotenv/config';
 
 type Input = CreateUrlDto;
 type Result = {
@@ -19,7 +20,7 @@ export class CreateShortUrlService implements UseCase<Input, Result> {
   ) {}
   async execute(input: Input): Promise<Result> {
     const { url } = input;
-    const shortUrl = nanoid();
+    const shortUrl = nanoid(6);
 
     const urlEntity = Url.create({
       original: url,

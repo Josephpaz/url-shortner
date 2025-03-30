@@ -1,8 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsDataURI } from 'class-validator';
+import { IsNotEmpty, IsUrl } from 'class-validator';
 
 export class CreateUrlDto {
   @ApiProperty()
-  @IsDataURI()
+  @IsNotEmpty()
+  @IsUrl()
   url: string;
 }
