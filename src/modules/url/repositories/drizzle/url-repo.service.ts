@@ -1,4 +1,9 @@
-import { Inject, Injectable } from '@nestjs/common';
+import {
+  Inject,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { Url } from '../../domain/url.entity';
 import { FindByUniqueUrlModel, IUrlRepository } from '../url-repo.interface';
 import * as schema from '../../../../db/schema';
@@ -15,43 +20,54 @@ export class UrlRepoService implements IUrlRepository {
   ) {}
 
   async save(url: Url): Promise<Url> {
-    const uuid = randomUUID();
+    try {
+      const uuid = randomUUID();
 
-    await this.drizzleService.insert(schema.url).values({
-      id: uuid,
-      original: url.original,
-      short: url.short,
-      clicks: url.clicks,
-      createdAt: url.createdAt,
-      updatedAt: url.updatedAt,
-      deletedAt: url.deletedAt,
-    });
+      await this.drizzleService.insert(schema.url).values({
+        id: uuid,
+        original: url.original,
+        short: url.short,
+        clicks: url.clicks,
+        createdAt: url.createdAt,
+        updatedAt: url.updatedAt,
+        deletedAt: url.deletedAt,
+      });
 
-    const urlInserted = await this.drizzleService
-      .select()
-      .from(schema.url)
-      .where(eq(schema.url.id, uuid));
+      const urlInserted = await this.findBy({ id: uuid });
 
-    const record = UrlMapper.toDomain(urlInserted[0]);
-
-    return record;
+      return urlInserted;
+    } catch (error) {
+      throw new InternalServerErrorException(
+        `failed to short the url: ${url.original}`,
+        {
+          cause: new Error(error),
+        },
+      );
+    }
   }
 
   async findBy(params: FindByUniqueUrlModel): Promise<Url> {
-    const [key] = Object.keys(params) as ('id' | 'short')[];
+    try {
+      const [key] = Object.keys(params) as ('id' | 'short')[];
 
-    const column = schema.url[key];
-    const value = params[key] as string;
+      const column = schema.url[key];
+      const value = params[key] as string;
 
-    const [urlResult] = await this.drizzleService
-      .select()
-      .from(schema.url)
-      .where(eq(column, value));
+      const [urlResult] = await this.drizzleService
+        .select()
+        .from(schema.url)
+        .where(eq(column, value));
 
-    if (!urlResult) {
-      throw new Error('URL not found');
+      if (!urlResult) {
+        throw new NotFoundException('NotFoundUrlError');
+      }
+
+      return UrlMapper.toDomain(urlResult);
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+      throw new InternalServerErrorException(error);
     }
-
-    return UrlMapper.toDomain(urlResult);
   }
 }
