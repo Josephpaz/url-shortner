@@ -3,7 +3,7 @@ import { CreateShortUrlService } from './create-short-url.service';
 import { CreateUrlDto } from '../../dtos/create-url.dto';
 import { UrlMapper } from '../../mappers/url.mapper';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { AuthGuard } from '@nestjs/passport';
+import { OptionalJwtAuthGuard } from 'src/modules/auth/strategies/jwt-optional.strategy';
 
 @ApiTags('Url')
 @Controller('url')
@@ -11,7 +11,7 @@ export class CreateShortUrlController {
   constructor(private readonly createShortUrlService: CreateShortUrlService) {}
 
   @ApiBearerAuth()
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(OptionalJwtAuthGuard)
   @Post()
   async handle(
     @Body() body: CreateUrlDto,
