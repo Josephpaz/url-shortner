@@ -1,4 +1,20 @@
 # Changelog
+
+## [v0.1.0] - 2025-03-30
+
+### Adicionado
+- **Rota pública `POST /urls`** para encurtar uma URL original
+- **Validação de entrada** com `class-validator` e `@IsUrl()` no DTO de criação
+- **Geração de short codes** com 6 caracteres aleatórios
+- **Armazenamento no banco de dados** via `UrlRepoService`
+- **Mapper de entidade `Url`**, com `toDomain` (Drizzle ➝ Domain) e `toDto` (Domain ➝ DTO)
+- **Serviço `UrlService`** para coordenar criação e persistência da URL
+- **Rota pública `GET /:short`** que redireciona o usuário para a URL original
+- **Tratamento de exceção `NotFoundException`** caso o short code não seja encontrado
+- **Documentação com Swagger** das rotas de encurtamento
+
+---
+
 ## [v0.0.1] - 2025-03-27
 
 ### Adicionado
