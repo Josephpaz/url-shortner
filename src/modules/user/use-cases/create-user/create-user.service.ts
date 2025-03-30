@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { CreateUserDto } from '../../dtos/create-user.dto';
 import { User } from '../../domain/user.entity';
 import { UseCase } from 'src/shared/core/use-case';
@@ -30,7 +30,7 @@ export class CreateUserService implements UseCase<Input, Result> {
     });
 
     if (isUserExists) {
-      throw new Error('UserEmailAlreadyExistsError');
+      throw new BadRequestException('UserEmailAlreadyExistsError');
     }
 
     const data = await this.userRepository.save(user);
