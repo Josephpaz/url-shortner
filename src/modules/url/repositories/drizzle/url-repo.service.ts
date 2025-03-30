@@ -33,7 +33,7 @@ export class UrlRepoService implements IUrlRepository {
         deletedAt: url.deletedAt,
       });
 
-      const urlInserted = await this.findBy({ id: uuid });
+      const urlInserted = await this.findByOrThrow({ id: uuid });
 
       return urlInserted;
     } catch (error) {
@@ -46,28 +46,27 @@ export class UrlRepoService implements IUrlRepository {
     }
   }
 
-  async findBy(params: FindByUniqueUrlModel): Promise<Url> {
-    try {
-      const [key] = Object.keys(params) as ('id' | 'short')[];
+  async findBy(params: FindByUniqueUrlModel): Promise<Url | null> {
+    const [key] = Object.keys(params) as ('id' | 'short')[];
 
-      const column = schema.url[key];
-      const value = params[key] as string;
+    const column = schema.url[key];
+    const value = params[key] as string;
 
-      const [urlResult] = await this.drizzleService
-        .select()
-        .from(schema.url)
-        .where(eq(column, value));
+    const [urlResult] = await this.drizzleService
+      .select()
+      .from(schema.url)
+      .where(eq(column, value));
 
-      if (!urlResult) {
-        throw new NotFoundException('NotFoundUrlError');
-      }
+    return urlResult ? UrlMapper.toDomain(urlResult) : null;
+  }
 
-      return UrlMapper.toDomain(urlResult);
-    } catch (error) {
-      if (error instanceof NotFoundException) {
-        throw error;
-      }
-      throw new InternalServerErrorException(error);
+  async findByOrThrow(params: FindByUniqueUrlModel): Promise<Url> {
+    const url = await this.findBy(params);
+
+    if (!url) {
+      throw new NotFoundException('NotFoundUrlError');
     }
+
+    return url;
   }
 }

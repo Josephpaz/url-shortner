@@ -22,7 +22,7 @@ export class GetShortUrlService implements UseCase<Input, Result> {
   async execute(input: Input): Promise<Result> {
     const { short } = input;
 
-    const url = await this.urlRepository.findBy({ short });
+    const url = await this.urlRepository.findByOrThrow({ short });
 
     return {
       type: 'GetShortUrlSuccess',

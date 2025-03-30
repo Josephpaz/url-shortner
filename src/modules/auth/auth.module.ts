@@ -6,6 +6,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { AuthController } from './auth.controller';
 import { UserRepoService } from '../user/repositories/drizzle/user-repo.service';
 import { LocalStrategy } from './strategies/local.strategy.local';
+import { JwtStrategy } from './strategies/jwt.strategy';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { LocalStrategy } from './strategies/local.strategy.local';
     AuthService,
     UserRepoService,
     LocalStrategy,
+    JwtStrategy,
     {
       provide: 'IUserRepository',
       useExisting: UserRepoService,
