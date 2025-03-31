@@ -72,8 +72,11 @@ export class UserRepoService implements IUserRepository {
       .select()
       .from(schema.user)
       .innerJoin(schema.url, eq(schema.url.userId, schema.user.id))
+      .innerJoin(schema.accessLogs, eq(schema.accessLogs.urlId, schema.url.id))
       .where(and(eq(schema.user.id, id), isNull(schema.url.deletedAt)));
 
-    return userUrls.map(({ url }) => UrlMapper.toDomain(url));
+    return userUrls.map(({ url, access_logs }) =>
+      UrlMapper.toDomain({ ...url, accessLog: access_logs }),
+    );
   }
 }

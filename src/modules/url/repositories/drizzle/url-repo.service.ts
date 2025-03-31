@@ -52,6 +52,23 @@ export class UrlRepoService implements IUrlRepository {
     }
   }
 
+  async findAll(): Promise<Url[]> {
+    const urls = await this.drizzleService
+      .select()
+      .from(schema.url)
+      .leftJoin(schema.user, eq(schema.user.id, schema.url.userId))
+      .leftJoin(schema.accessLogs, eq(schema.accessLogs.urlId, schema.url.id))
+      .where(isNull(schema.url.deletedAt));
+
+    return urls.map((url) =>
+      UrlMapper.toDomain({
+        ...url.url,
+        user: url.user,
+        accessLog: url.access_logs,
+      }),
+    );
+  }
+
   async findBy(
     params: FindByUniqueUrlModel,
     flag = FindWithDeleted.False,

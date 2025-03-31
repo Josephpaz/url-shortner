@@ -1,8 +1,10 @@
+import { AccessLog } from 'src/modules/access-log/domain/access-log.entity';
 import { User } from 'src/modules/user/domain/user.entity';
 import { Entity, EntityMetadata } from 'src/shared/core/entity';
 
 type UrlProps = {
   user?: User;
+  accessLog?: AccessLog;
   original: string;
   short: string;
   clicks: number;
@@ -23,6 +25,14 @@ export class Url extends Entity<UrlProps> {
 
   set user(user: User) {
     this.props.user = user;
+  }
+
+  get accessLog(): AccessLog | undefined {
+    return this.props.accessLog;
+  }
+
+  set accessLog(accessLog: AccessLog) {
+    this.props.accessLog = accessLog;
   }
 
   get original(): string {

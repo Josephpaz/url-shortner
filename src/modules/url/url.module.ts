@@ -10,6 +10,9 @@ import { EditUrlService } from './use-cases/edit-url/edit-url.service';
 import { EditUrlController } from './use-cases/edit-url/edit-url.controller';
 import { RemoveUrlService } from './use-cases/remove-url/remove-url.service';
 import { RemoveUrlController } from './use-cases/remove-url/remove-url.controller';
+import { AccessLogRepository } from '../access-log/repositories/drizzle/access-log-repo.service';
+import { GetUrlsService } from './use-cases/get-urls/get-urls.service';
+import { GetUrlsController } from './use-cases/get-urls/get-urls.controller';
 
 @Module({
   imports: [DrizzleModule],
@@ -24,16 +27,23 @@ import { RemoveUrlController } from './use-cases/remove-url/remove-url.controlle
       provide: 'UserRepo',
       useExisting: UserRepoService,
     },
+    AccessLogRepository,
+    {
+      provide: 'AccessLogRepo',
+      useExisting: AccessLogRepository,
+    },
     CreateShortUrlService,
     GetShortUrlService,
     EditUrlService,
     RemoveUrlService,
+    GetUrlsService,
   ],
   controllers: [
     CreateShortUrlController,
     GetShortUrlController,
     EditUrlController,
     RemoveUrlController,
+    GetUrlsController,
   ],
 })
 export class UrlModule {}
