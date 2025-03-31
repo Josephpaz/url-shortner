@@ -61,7 +61,7 @@ export class UrlRepoService implements IUrlRepository {
       .select()
       .from(schema.url)
       .leftJoin(schema.user, eq(schema.user.id, schema.url.userId))
-      .where(eq(column, value));
+      .where(and(eq(column, value), isNull(schema.url.deletedAt)));
 
     return urlResult
       ? UrlMapper.toDomain({ ...urlResult.url, user: urlResult.user })
@@ -91,5 +91,23 @@ export class UrlRepoService implements IUrlRepository {
       );
 
     return url.length !== 1 ? null : UrlMapper.toDomain(url[0]);
+  }
+
+  async update(url: Url): Promise<Url> {
+    await this.drizzleService
+      .update(schema.url)
+      .set({
+        original: url.original,
+        short: url.short,
+        clicks: url.clicks,
+        createdAt: url.createdAt,
+        updatedAt: url.updatedAt,
+        deletedAt: url.deletedAt,
+      })
+      .where(eq(schema.url.id, url.id!));
+
+    const urlUpdated = await this.findByOrThrow({ id: url.id! });
+
+    return urlUpdated;
   }
 }

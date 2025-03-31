@@ -12,4 +12,5 @@ export interface IUrlRepository {
   findBy(params: FindByUniqueUrlModel): Promise<Url | null>;
   findByOrThrow(params: FindByUniqueUrlModel): Promise<Url>;
   verifyIfExists(params: VerifyIfExistsParams): Promise<Url | null>;
+  update(url: Url): Promise<Url>;
 }

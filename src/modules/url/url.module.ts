@@ -6,6 +6,8 @@ import { CreateShortUrlController } from './use-cases/create-short-url/create-sh
 import { GetShortUrlService } from './use-cases/get-short-url/get-short-url.service';
 import { GetShortUrlController } from './use-cases/get-short-url/get-short-url.controller';
 import { UserRepoService } from '../user/repositories/drizzle/user-repo.service';
+import { EditUrlService } from './use-cases/edit-url/edit-url.service';
+import { EditUrlController } from './use-cases/edit-url/edit-url.controller';
 
 @Module({
   imports: [DrizzleModule],
@@ -22,7 +24,12 @@ import { UserRepoService } from '../user/repositories/drizzle/user-repo.service'
     },
     CreateShortUrlService,
     GetShortUrlService,
+    EditUrlService,
   ],
-  controllers: [CreateShortUrlController, GetShortUrlController],
+  controllers: [
+    CreateShortUrlController,
+    GetShortUrlController,
+    EditUrlController,
+  ],
 })
 export class UrlModule {}
