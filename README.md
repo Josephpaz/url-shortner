@@ -8,7 +8,7 @@ Sistema backend desenvolvido com NestJS que permite o encurtamento de URLs, redi
 
 O sistema é composto por três entidades: `User`, `Url` e `AccessLogs`. A imagem abaixo representa o relacionamento entre elas.
 
-![Diagrama ER](https://i.imgur.com/O1j0TNE.png)
+![Diagrama ER](https://i.imgur.com/O1j0TNE)
 https://dbdiagram.io/d/URL_SHORTNER-67e456974f7afba18457a27a
 
 ---
