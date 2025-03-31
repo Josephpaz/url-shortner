@@ -13,7 +13,7 @@ type Result = {
 @Injectable()
 export class CreateUserService implements UseCase<Input, Result> {
   constructor(
-    @Inject('IUserRepository')
+    @Inject('UserRepo')
     private readonly userRepository: IUserRepository,
   ) {}
 

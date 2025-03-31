@@ -5,11 +5,16 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { Url } from '../../domain/url.entity';
-import { FindByUniqueUrlModel, IUrlRepository } from '../url-repo.interface';
+import {
+  FindByUniqueUrlModel,
+  FindWithDeleted,
+  IUrlRepository,
+  VerifyIfExistsParams,
+} from '../url-repo.interface';
 import * as schema from '../../../../db/schema';
 import { MySql2Database } from 'drizzle-orm/mysql2';
 import { UrlMapper } from '../../mappers/url.mapper';
-import { eq } from 'drizzle-orm';
+import { and, eq, isNull } from 'drizzle-orm';
 import { randomUUID } from 'crypto';
 
 @Injectable()
@@ -25,6 +30,7 @@ export class UrlRepoService implements IUrlRepository {
 
       await this.drizzleService.insert(schema.url).values({
         id: uuid,
+        userId: url.user?.id,
         original: url.original,
         short: url.short,
         clicks: url.clicks,
@@ -33,7 +39,7 @@ export class UrlRepoService implements IUrlRepository {
         deletedAt: url.deletedAt,
       });
 
-      const urlInserted = await this.findBy({ id: uuid });
+      const urlInserted = await this.findByOrThrow({ id: uuid });
 
       return urlInserted;
     } catch (error) {
@@ -46,28 +52,74 @@ export class UrlRepoService implements IUrlRepository {
     }
   }
 
-  async findBy(params: FindByUniqueUrlModel): Promise<Url> {
-    try {
-      const [key] = Object.keys(params) as ('id' | 'short')[];
+  async findBy(
+    params: FindByUniqueUrlModel,
+    flag = FindWithDeleted.False,
+  ): Promise<Url | null> {
+    const [key] = Object.keys(params) as ('id' | 'short')[];
 
-      const column = schema.url[key];
-      const value = params[key] as string;
+    const column = schema.url[key];
+    const value = params[key] as string;
 
-      const [urlResult] = await this.drizzleService
-        .select()
-        .from(schema.url)
-        .where(eq(column, value));
+    const [urlResult] = await this.drizzleService
+      .select()
+      .from(schema.url)
+      .leftJoin(schema.user, eq(schema.user.id, schema.url.userId))
+      .where(
+        and(eq(column, value), flag ? undefined : isNull(schema.url.deletedAt)),
+      );
 
-      if (!urlResult) {
-        throw new NotFoundException('NotFoundUrlError');
-      }
+    return urlResult
+      ? UrlMapper.toDomain({ ...urlResult.url, user: urlResult.user })
+      : null;
+  }
 
-      return UrlMapper.toDomain(urlResult);
-    } catch (error) {
-      if (error instanceof NotFoundException) {
-        throw error;
-      }
-      throw new InternalServerErrorException(error);
+  async findByOrThrow(
+    params: FindByUniqueUrlModel,
+    flag = FindWithDeleted.False,
+  ): Promise<Url> {
+    const url = await this.findBy(params, flag);
+
+    if (!url) {
+      throw new NotFoundException('NotFoundUrlError');
     }
+
+    return url;
+  }
+
+  async verifyIfExists(params: VerifyIfExistsParams): Promise<Url | null> {
+    const url = await this.drizzleService
+      .select()
+      .from(schema.url)
+      .where(
+        and(
+          eq(schema.url.original, params.original),
+          params.userId ? eq(schema.url.userId, params.userId) : undefined,
+          isNull(schema.url.deletedAt),
+        ),
+      );
+
+    return url.length !== 1 ? null : UrlMapper.toDomain(url[0]);
+  }
+
+  async update(url: Url): Promise<Url> {
+    await this.drizzleService
+      .update(schema.url)
+      .set({
+        original: url.original,
+        short: url.short,
+        clicks: url.clicks,
+        createdAt: url.createdAt,
+        updatedAt: url.updatedAt,
+        deletedAt: url.deletedAt,
+      })
+      .where(eq(schema.url.id, url.id!));
+
+    const urlUpdated = await this.findByOrThrow(
+      { id: url.id! },
+      FindWithDeleted.True,
+    );
+
+    return urlUpdated;
   }
 }

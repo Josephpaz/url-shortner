@@ -11,8 +11,8 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
 
   const config = new DocumentBuilder()
-    .setTitle('Cats example')
-    .setDescription('The cats API description')
+    .setTitle('Url shortner')
+    .setDescription('Url Shortner API description')
     .setVersion('1.0')
     .addTag('Url Shortner')
     .addBearerAuth()

@@ -1,6 +1,8 @@
+import { User } from 'src/modules/user/domain/user.entity';
 import { Entity, EntityMetadata } from 'src/shared/core/entity';
 
 type UrlProps = {
+  user?: User;
   original: string;
   short: string;
   clicks: number;
@@ -13,6 +15,14 @@ export class Url extends Entity<UrlProps> {
 
   static create(props: UrlProps, metadata?: EntityMetadata): Url {
     return new Url(props, metadata);
+  }
+
+  get user(): User | undefined {
+    return this.props.user;
+  }
+
+  set user(user: User) {
+    this.props.user = user;
   }
 
   get original(): string {
