@@ -24,6 +24,10 @@ export class GetShortUrlService implements UseCase<Input, Result> {
 
     const url = await this.urlRepository.findByOrThrow({ short });
 
+    url.clicks += 1;
+
+    await this.urlRepository.update(url);
+
     return {
       type: 'GetShortUrlSuccess',
       data: url,
