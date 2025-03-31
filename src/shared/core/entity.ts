@@ -10,7 +10,7 @@ export abstract class Entity<T> {
   private readonly _id?: string;
   private readonly _createdAt?: Date;
   private readonly _updatedAt?: Date;
-  private readonly _deletedAt?: Date | null;
+  private _deletedAt?: Date | null;
 
   constructor(props: T, metadata?: EntityMetadata) {
     this.props = props;
@@ -33,6 +33,10 @@ export abstract class Entity<T> {
   }
 
   get deletedAt() {
-    return this._deletedAt;
+    return this._deletedAt ?? null;
+  }
+
+  set deletedAt(deletedAt: Date | null) {
+    this._deletedAt = deletedAt;
   }
 }

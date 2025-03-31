@@ -2,8 +2,8 @@ import { Body, Controller, Param, Put, Req, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { EditUrlService } from './edit-url.service';
 import { EditUrlDto } from '../../dtos/edit-url.dto';
-import { JwtStrategy } from 'src/modules/auth/strategies/jwt.strategy';
 import { UrlMapper } from '../../mappers/url.mapper';
+import { AuthGuard } from '@nestjs/passport';
 
 @ApiTags('Url')
 @Controller('urls')
@@ -11,7 +11,7 @@ export class EditUrlController {
   constructor(private readonly editUrlService: EditUrlService) {}
 
   @ApiBearerAuth()
-  @UseGuards(JwtStrategy)
+  @UseGuards(AuthGuard('jwt'))
   @Put(':id')
   async handle(
     @Param('id') id: string,

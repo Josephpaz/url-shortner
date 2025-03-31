@@ -9,6 +9,7 @@ import { UserRepoService } from '../user/repositories/drizzle/user-repo.service'
 import { EditUrlService } from './use-cases/edit-url/edit-url.service';
 import { EditUrlController } from './use-cases/edit-url/edit-url.controller';
 import { RemoveUrlService } from './use-cases/remove-url/remove-url.service';
+import { RemoveUrlController } from './use-cases/remove-url/remove-url.controller';
 
 @Module({
   imports: [DrizzleModule],
@@ -32,6 +33,7 @@ import { RemoveUrlService } from './use-cases/remove-url/remove-url.service';
     CreateShortUrlController,
     GetShortUrlController,
     EditUrlController,
+    RemoveUrlController,
   ],
 })
 export class UrlModule {}

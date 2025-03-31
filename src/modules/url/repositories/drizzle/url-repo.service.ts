@@ -7,6 +7,7 @@ import {
 import { Url } from '../../domain/url.entity';
 import {
   FindByUniqueUrlModel,
+  FindWithDeleted,
   IUrlRepository,
   VerifyIfExistsParams,
 } from '../url-repo.interface';
@@ -51,7 +52,10 @@ export class UrlRepoService implements IUrlRepository {
     }
   }
 
-  async findBy(params: FindByUniqueUrlModel): Promise<Url | null> {
+  async findBy(
+    params: FindByUniqueUrlModel,
+    flag = FindWithDeleted.False,
+  ): Promise<Url | null> {
     const [key] = Object.keys(params) as ('id' | 'short')[];
 
     const column = schema.url[key];
@@ -61,15 +65,20 @@ export class UrlRepoService implements IUrlRepository {
       .select()
       .from(schema.url)
       .leftJoin(schema.user, eq(schema.user.id, schema.url.userId))
-      .where(and(eq(column, value), isNull(schema.url.deletedAt)));
+      .where(
+        and(eq(column, value), flag ? undefined : isNull(schema.url.deletedAt)),
+      );
 
     return urlResult
       ? UrlMapper.toDomain({ ...urlResult.url, user: urlResult.user })
       : null;
   }
 
-  async findByOrThrow(params: FindByUniqueUrlModel): Promise<Url> {
-    const url = await this.findBy(params);
+  async findByOrThrow(
+    params: FindByUniqueUrlModel,
+    flag = FindWithDeleted.False,
+  ): Promise<Url> {
+    const url = await this.findBy(params, flag);
 
     if (!url) {
       throw new NotFoundException('NotFoundUrlError');
@@ -106,7 +115,10 @@ export class UrlRepoService implements IUrlRepository {
       })
       .where(eq(schema.url.id, url.id!));
 
-    const urlUpdated = await this.findByOrThrow({ id: url.id! });
+    const urlUpdated = await this.findByOrThrow(
+      { id: url.id! },
+      FindWithDeleted.True,
+    );
 
     return urlUpdated;
   }
