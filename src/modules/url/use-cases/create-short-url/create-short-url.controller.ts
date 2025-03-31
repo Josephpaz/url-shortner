@@ -6,7 +6,7 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { OptionalJwtAuthGuard } from 'src/modules/auth/strategies/jwt-optional.strategy';
 
 @ApiTags('Url')
-@Controller('url')
+@Controller('urls')
 export class CreateShortUrlController {
   constructor(private readonly createShortUrlService: CreateShortUrlService) {}
 

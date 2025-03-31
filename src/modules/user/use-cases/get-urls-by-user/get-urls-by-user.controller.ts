@@ -4,7 +4,7 @@ import { GetUrlsByUserService } from './get-urls-by-user.service';
 import { UrlMapper } from 'src/modules/url/mappers/url.mapper';
 
 @ApiTags('User')
-@Controller('user')
+@Controller('users')
 export class GetUrlsByUserController {
   constructor(private readonly getUrlsByUserService: GetUrlsByUserService) {}
 

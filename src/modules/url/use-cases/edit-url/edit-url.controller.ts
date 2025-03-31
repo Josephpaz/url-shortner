@@ -6,7 +6,7 @@ import { JwtStrategy } from 'src/modules/auth/strategies/jwt.strategy';
 import { UrlMapper } from '../../mappers/url.mapper';
 
 @ApiTags('Url')
-@Controller('url')
+@Controller('urls')
 export class EditUrlController {
   constructor(private readonly editUrlService: EditUrlService) {}
 

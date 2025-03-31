@@ -3,7 +3,7 @@ import { GetShortUrlService } from './get-short-url.service';
 import { ApiTags } from '@nestjs/swagger';
 
 @ApiTags('Url')
-@Controller('url')
+@Controller('urls')
 export class GetShortUrlController {
   constructor(private readonly getShortUrlService: GetShortUrlService) {}
 
