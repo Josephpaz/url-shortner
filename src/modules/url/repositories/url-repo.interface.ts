@@ -14,6 +14,7 @@ export type VerifyIfExistsParams = {
 
 export interface IUrlRepository {
   save(url: Url): Promise<Url>;
+  findAll(): Promise<Url[]>;
   findBy(params: FindByUniqueUrlModel): Promise<Url | null>;
   findByOrThrow(
     params: FindByUniqueUrlModel,
