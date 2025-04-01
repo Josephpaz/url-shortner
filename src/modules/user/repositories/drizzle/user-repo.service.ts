@@ -4,15 +4,22 @@ import {
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
-import { FindByUniqueUrlModel, IUserRepository } from '../user-repo.interface';
+import {
+  FindByUniqueUrlModel,
+  FindUrlsParams,
+  IUserRepository,
+} from '../user-repo.interface';
 import { MySql2Database } from 'drizzle-orm/mysql2';
 import * as schema from '../../../../db/schema';
 import { User } from '../../domain/user.entity';
 import { randomUUID } from 'crypto';
 import { UserMapper } from '../../mappers';
-import { and, eq, isNull } from 'drizzle-orm';
+import { and, asc, desc, eq, isNull, like } from 'drizzle-orm';
 import { Url } from 'src/modules/url/domain/url.entity';
 import { UrlMapper } from 'src/modules/url/mappers/url.mapper';
+import { PaginationResult } from 'src/shared/interface/pagination-result.interface';
+import { getPageOffsets } from 'src/shared/helpers/get-pages-offset.helper';
+import { Order } from 'src/shared/interface/order';
 
 @Injectable()
 export class UserRepoService implements IUserRepository {
@@ -67,12 +74,31 @@ export class UserRepoService implements IUserRepository {
     return user;
   }
 
-  async findUrls(id: string): Promise<Url[]> {
+  async findUrls(params: FindUrlsParams): Promise<PaginationResult<Url>> {
+    const { id, page, pageSize, order, short } = params;
+    const { skip, take } = getPageOffsets(page, pageSize);
+
     const result = await this.drizzleService
       .select()
       .from(schema.url)
-      .where(and(eq(schema.url.userId, id), isNull(schema.url.deletedAt)));
+      .where(
+        and(
+          eq(schema.url.userId, id),
+          like(schema.url.short, `%${short}%`),
+          isNull(schema.url.deletedAt),
+        ),
+      )
+      .orderBy(
+        order === Order.ASC
+          ? asc(schema.url.createdAt)
+          : desc(schema.url.createdAt),
+      )
+      .offset(skip)
+      .limit(take);
 
-    return result.map((r) => UrlMapper.toDomain(r));
+    return {
+      total: result.length,
+      data: result.map((r) => UrlMapper.toDomain(r)),
+    };
   }
 }
