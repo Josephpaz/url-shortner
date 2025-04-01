@@ -68,15 +68,11 @@ export class UserRepoService implements IUserRepository {
   }
 
   async findUrls(id: string): Promise<Url[]> {
-    const userUrls = await this.drizzleService
+    const result = await this.drizzleService
       .select()
-      .from(schema.user)
-      .innerJoin(schema.url, eq(schema.url.userId, schema.user.id))
-      .innerJoin(schema.accessLogs, eq(schema.accessLogs.urlId, schema.url.id))
-      .where(and(eq(schema.user.id, id), isNull(schema.url.deletedAt)));
+      .from(schema.url)
+      .where(and(eq(schema.url.userId, id), isNull(schema.url.deletedAt)));
 
-    return userUrls.map(({ url, access_logs }) =>
-      UrlMapper.toDomain({ ...url, accessLog: access_logs }),
-    );
+    return result.map((r) => UrlMapper.toDomain(r));
   }
 }

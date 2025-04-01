@@ -6,5 +6,5 @@ export const DrizzleService = 'DrizzleService';
 export const drizzleProvider = DrizzleMySqlModule.register({
   tag: DrizzleService,
   mysql: { ...appConfig.mysql, connection: 'client' },
-  config: { schema, mode: 'default' },
+  config: { schema: { ...schema }, mode: 'default' },
 });

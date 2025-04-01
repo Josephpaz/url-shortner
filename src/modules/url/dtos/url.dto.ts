@@ -4,7 +4,7 @@ import { UserDto } from 'src/modules/user/dtos/user.dto';
 export type UrlDto = {
   id?: string;
   user?: UserDto;
-  accessLog?: AccessLogDto;
+  accessLogs?: AccessLogDto[];
   original: string;
   short: string;
   clicks: number;

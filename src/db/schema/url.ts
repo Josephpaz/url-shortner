@@ -6,6 +6,8 @@ import {
   int,
 } from 'drizzle-orm/mysql-core';
 import { user } from './user';
+import { relations } from 'drizzle-orm';
+import { accessLog } from './accessLog';
 
 export const url = mysqlTable('url', {
   id: varchar('id', { length: 36 }).primaryKey().notNull(),
@@ -19,3 +21,11 @@ export const url = mysqlTable('url', {
   updatedAt: timestamp('updatedAt').defaultNow().notNull(),
   deletedAt: timestamp('deletedAt'),
 });
+
+export const urlRelations = relations(url, ({ one, many }) => ({
+  user: one(user, {
+    fields: [url.userId],
+    references: [user.id],
+  }),
+  accessLogs: many(accessLog),
+}));

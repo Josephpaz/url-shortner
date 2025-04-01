@@ -20,7 +20,7 @@ export class AccessLogRepository implements IAccessLogRepository {
     try {
       const uuid = randomUUID();
 
-      await this.drizzleService.insert(schema.accessLogs).values({
+      await this.drizzleService.insert(schema.accessLog).values({
         id: uuid,
         urlId: accessLog.urlId,
         ipAddress: accessLog.ipAddress,

@@ -4,7 +4,7 @@ import { Entity, EntityMetadata } from 'src/shared/core/entity';
 
 type UrlProps = {
   user?: User;
-  accessLog?: AccessLog;
+  accessLogs?: AccessLog[];
   original: string;
   short: string;
   clicks: number;
@@ -27,12 +27,12 @@ export class Url extends Entity<UrlProps> {
     this.props.user = user;
   }
 
-  get accessLog(): AccessLog | undefined {
-    return this.props.accessLog;
+  get accessLogs(): AccessLog[] | undefined {
+    return this.props.accessLogs;
   }
 
-  set accessLog(accessLog: AccessLog) {
-    this.props.accessLog = accessLog;
+  set accessLogs(accessLogs: AccessLog[]) {
+    this.props.accessLogs = accessLogs;
   }
 
   get original(): string {

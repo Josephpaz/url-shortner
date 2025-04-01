@@ -12,6 +12,7 @@ import {
   VerifyIfExistsParams,
 } from '../url-repo.interface';
 import * as schema from '../../../../db/schema';
+// import * as url from '../../../../db/schema/url';
 import { MySql2Database } from 'drizzle-orm/mysql2';
 import { UrlMapper } from '../../mappers/url.mapper';
 import { and, eq, isNull } from 'drizzle-orm';
@@ -53,20 +54,14 @@ export class UrlRepoService implements IUrlRepository {
   }
 
   async findAll(): Promise<Url[]> {
-    const urls = await this.drizzleService
-      .select()
-      .from(schema.url)
-      .leftJoin(schema.user, eq(schema.user.id, schema.url.userId))
-      .leftJoin(schema.accessLogs, eq(schema.accessLogs.urlId, schema.url.id))
-      .where(isNull(schema.url.deletedAt));
+    const urls = await this.drizzleService.query.url.findMany({
+      with: {
+        user: true,
+        accessLogs: true,
+      },
+    });
 
-    return urls.map((url) =>
-      UrlMapper.toDomain({
-        ...url.url,
-        user: url.user,
-        accessLog: url.access_logs,
-      }),
-    );
+    return urls.map((url) => UrlMapper.toDomain(url));
   }
 
   async findBy(
