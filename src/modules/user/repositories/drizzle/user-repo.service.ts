@@ -84,7 +84,7 @@ export class UserRepoService implements IUserRepository {
       .where(
         and(
           eq(schema.url.userId, id),
-          like(schema.url.short, `%${short}%`),
+          short ? like(schema.url.short, `%${short}%`) : undefined,
           isNull(schema.url.deletedAt),
         ),
       )
