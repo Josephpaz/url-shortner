@@ -14,6 +14,7 @@ import { AccessLogRepository } from '../access-log/repositories/drizzle/access-l
 import { GetUrlsService } from './use-cases/get-urls/get-urls.service';
 import { GetUrlsController } from './use-cases/get-urls/get-urls.controller';
 import { ActivateUrlService } from './use-cases/activate-url/activate-url.service';
+import { ActivateUrlController } from './use-cases/activate-url/activate-url.controller';
 
 @Module({
   imports: [DrizzleModule],
@@ -46,6 +47,7 @@ import { ActivateUrlService } from './use-cases/activate-url/activate-url.servic
     EditUrlController,
     RemoveUrlController,
     GetUrlsController,
+    ActivateUrlController,
   ],
 })
 export class UrlModule {}
