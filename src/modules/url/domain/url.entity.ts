@@ -58,4 +58,12 @@ export class Url extends Entity<UrlProps> {
   set clicks(clicks: number) {
     this.props.clicks = clicks;
   }
+
+  deactivate() {
+    this.deletedAt = new Date();
+  }
+
+  activate() {
+    this.deletedAt = null;
+  }
 }

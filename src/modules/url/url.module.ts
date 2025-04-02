@@ -13,6 +13,7 @@ import { RemoveUrlController } from './use-cases/remove-url/remove-url.controlle
 import { AccessLogRepository } from '../access-log/repositories/drizzle/access-log-repo.service';
 import { GetUrlsService } from './use-cases/get-urls/get-urls.service';
 import { GetUrlsController } from './use-cases/get-urls/get-urls.controller';
+import { ActivateUrlService } from './use-cases/activate-url/activate-url.service';
 
 @Module({
   imports: [DrizzleModule],
@@ -37,6 +38,7 @@ import { GetUrlsController } from './use-cases/get-urls/get-urls.controller';
     EditUrlService,
     RemoveUrlService,
     GetUrlsService,
+    ActivateUrlService,
   ],
   controllers: [
     CreateShortUrlController,
