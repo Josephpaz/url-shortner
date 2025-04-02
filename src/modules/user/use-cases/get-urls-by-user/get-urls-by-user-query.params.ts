@@ -1,6 +1,6 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsEnum, IsNumber, IsString } from 'class-validator';
+import { IsEnum, IsNumber, IsOptional, IsString } from 'class-validator';
 import { Order } from 'src/shared/interface/order';
 
 export class GetUrlsByUserQueryParams {
@@ -15,6 +15,7 @@ export class GetUrlsByUserQueryParams {
   pageSize = 10;
 
   @ApiPropertyOptional()
+  @IsOptional()
   @IsString()
   short?: string;
 
