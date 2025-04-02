@@ -61,7 +61,11 @@ docker compose up -d
 ```bash
 npx drizzle-kit push
 ```
-5. **Inicie o servidor local**
+5. **Carregando as dependências**
+```bash
+npm i
+```
+6. **Inicie o servidor local**
 ```bash
 npm run start:dev
 ```
