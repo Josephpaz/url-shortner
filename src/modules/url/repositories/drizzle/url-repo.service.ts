@@ -16,7 +16,7 @@ import * as schema from '../../../../db/schema';
 // import * as url from '../../../../db/schema/url';
 import { MySql2Database } from 'drizzle-orm/mysql2';
 import { UrlMapper } from '../../mappers/url.mapper';
-import { and, asc, desc, eq, isNull, like } from 'drizzle-orm';
+import { and, asc, desc, eq, isNull } from 'drizzle-orm';
 import { randomUUID } from 'crypto';
 import { PaginationResult } from 'src/shared/interface/pagination-result.interface';
 import { getPageOffsets } from 'src/shared/helpers/get-pages-offset.helper';
@@ -61,22 +61,23 @@ export class UrlRepoService implements IUrlRepository {
     const { page, pageSize, order, short } = params;
     const { skip, take } = getPageOffsets(page, pageSize);
 
-    const result = await this.drizzleService
-      .select()
-      .from(schema.url)
-      .where(
+    const result = await this.drizzleService.query.url.findMany({
+      offset: skip,
+      limit: take,
+      where: (url, { and, like, isNull }) =>
         and(
-          short ? like(schema.url.short, `%${short}%`) : undefined,
-          isNull(schema.url.deletedAt),
+          short ? like(url.short, `%${short}%`) : undefined,
+          isNull(url.deletedAt),
         ),
-      )
-      .orderBy(
+      orderBy: [
         order === Order.ASC
           ? asc(schema.url.createdAt)
           : desc(schema.url.createdAt),
-      )
-      .offset(skip)
-      .limit(take);
+      ],
+      with: {
+        user: true,
+      },
+    });
 
     return {
       total: result.length,

@@ -15,6 +15,8 @@ import { GetUrlsService } from './use-cases/get-urls/get-urls.service';
 import { GetUrlsController } from './use-cases/get-urls/get-urls.controller';
 import { ActivateUrlService } from './use-cases/activate-url/activate-url.service';
 import { ActivateUrlController } from './use-cases/activate-url/activate-url.controller';
+import { GetUrlAccessLogsService } from './use-cases/get-url-access-logs/get-url-access-logs.service';
+import { GetUrlAccessLogsController } from './use-cases/get-url-access-logs/get-url-access-logs.controller';
 
 @Module({
   imports: [DrizzleModule],
@@ -40,6 +42,7 @@ import { ActivateUrlController } from './use-cases/activate-url/activate-url.con
     RemoveUrlService,
     GetUrlsService,
     ActivateUrlService,
+    GetUrlAccessLogsService,
   ],
   controllers: [
     CreateShortUrlController,
@@ -48,6 +51,7 @@ import { ActivateUrlController } from './use-cases/activate-url/activate-url.con
     RemoveUrlController,
     GetUrlsController,
     ActivateUrlController,
+    GetUrlAccessLogsController,
   ],
 })
 export class UrlModule {}
