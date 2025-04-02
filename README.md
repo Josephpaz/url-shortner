@@ -50,7 +50,7 @@ cd url-shortner
 2. **Copie o arquivo .env de exemplo**
 ```bash
 cp .env.example .env
-DATABASE_URL="mysql://root:root@localhost:3306/url_shortner"
+DATABASE_URL=mysql://root:secret@localhost:3306/url-shortner-db
 ```
 
 3. **Suba o banco de dados com Docker**
