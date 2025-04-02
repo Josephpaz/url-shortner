@@ -1,5 +1,5 @@
 import { InferSelectModel } from 'drizzle-orm';
-import { accessLogs, url, user } from '../../../db/schema';
+import { accessLog, url, user } from '../../../db/schema';
 import { Url } from '../domain/url.entity';
 import { UrlDto } from '../dtos/url.dto';
 import { UserMapper } from 'src/modules/user/mappers';
@@ -9,15 +9,15 @@ export class UrlMapper {
   static toDomain(
     raw: InferSelectModel<typeof url> & {
       user?: InferSelectModel<typeof user> | null;
-      accessLog?: InferSelectModel<typeof accessLogs> | null;
+      accessLogs?: InferSelectModel<typeof accessLog>[] | null;
     },
   ): Url {
     return Url.create(
       {
         original: raw.original,
         user: raw?.user ? UserMapper.toDomain(raw.user) : undefined,
-        accessLog: raw?.accessLog
-          ? AccessLogMapper.toDomain(raw.accessLog)
+        accessLogs: raw?.accessLogs
+          ? raw.accessLogs.map((alog) => AccessLogMapper.toDomain(alog))
           : undefined,
         short: raw.short,
         clicks: raw.clicks,
@@ -35,7 +35,9 @@ export class UrlMapper {
     return {
       id: entity.id,
       user: entity?.user && UserMapper.toDto(entity.user),
-      accessLog: entity?.accessLog && AccessLogMapper.toDto(entity.accessLog),
+      accessLogs:
+        entity?.accessLogs &&
+        entity.accessLogs?.map((alog) => AccessLogMapper.toDto(alog)),
       original: entity.original,
       short: entity.short,
       clicks: entity.clicks,

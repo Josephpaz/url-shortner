@@ -7,15 +7,20 @@ import {
 import { Url } from '../../domain/url.entity';
 import {
   FindByUniqueUrlModel,
+  FindUrlsParams,
   FindWithDeleted,
   IUrlRepository,
   VerifyIfExistsParams,
 } from '../url-repo.interface';
 import * as schema from '../../../../db/schema';
+// import * as url from '../../../../db/schema/url';
 import { MySql2Database } from 'drizzle-orm/mysql2';
 import { UrlMapper } from '../../mappers/url.mapper';
-import { and, eq, isNull } from 'drizzle-orm';
+import { and, asc, desc, eq, isNull } from 'drizzle-orm';
 import { randomUUID } from 'crypto';
+import { PaginationResult } from 'src/shared/interface/pagination-result.interface';
+import { getPageOffsets } from 'src/shared/helpers/get-pages-offset.helper';
+import { Order } from 'src/shared/interface/order';
 
 @Injectable()
 export class UrlRepoService implements IUrlRepository {
@@ -52,21 +57,32 @@ export class UrlRepoService implements IUrlRepository {
     }
   }
 
-  async findAll(): Promise<Url[]> {
-    const urls = await this.drizzleService
-      .select()
-      .from(schema.url)
-      .leftJoin(schema.user, eq(schema.user.id, schema.url.userId))
-      .leftJoin(schema.accessLogs, eq(schema.accessLogs.urlId, schema.url.id))
-      .where(isNull(schema.url.deletedAt));
+  async findAll(params: FindUrlsParams): Promise<PaginationResult<Url>> {
+    const { page, pageSize, order, short } = params;
+    const { skip, take } = getPageOffsets(page, pageSize);
 
-    return urls.map((url) =>
-      UrlMapper.toDomain({
-        ...url.url,
-        user: url.user,
-        accessLog: url.access_logs,
-      }),
-    );
+    const result = await this.drizzleService.query.url.findMany({
+      offset: skip,
+      limit: take,
+      where: (url, { and, like, isNull }) =>
+        and(
+          short ? like(url.short, `%${short}%`) : undefined,
+          isNull(url.deletedAt),
+        ),
+      orderBy: [
+        order === Order.ASC
+          ? asc(schema.url.createdAt)
+          : desc(schema.url.createdAt),
+      ],
+      with: {
+        user: true,
+      },
+    });
+
+    return {
+      total: result.length,
+      data: result.map((url) => UrlMapper.toDomain(url)),
+    };
   }
 
   async findBy(

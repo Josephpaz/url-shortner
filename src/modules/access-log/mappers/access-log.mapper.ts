@@ -1,10 +1,10 @@
 import { InferSelectModel } from 'drizzle-orm';
-import { accessLogs } from 'src/db/schema';
+import { accessLog } from 'src/db/schema';
 import { AccessLog } from '../domain/access-log.entity';
 import { AccessLogDto } from '../dto/access-log.dto';
 
 export class AccessLogMapper {
-  static toDomain(raw: InferSelectModel<typeof accessLogs>): AccessLog {
+  static toDomain(raw: InferSelectModel<typeof accessLog>): AccessLog {
     return AccessLog.create(
       {
         urlId: raw.urlId,

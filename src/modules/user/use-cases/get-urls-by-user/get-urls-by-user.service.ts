@@ -2,14 +2,16 @@ import { Inject, Injectable } from '@nestjs/common';
 import { Url } from 'src/modules/url/domain/url.entity';
 import { UseCase } from 'src/shared/core/use-case';
 import { IUserRepository } from '../../repositories/user-repo.interface';
+import { GetUrlsByUserQueryParams } from './get-urls-by-user-query.params';
+import { PaginationResult } from 'src/shared/interface/pagination-result.interface';
 
 type Input = {
   id: string;
+  query: GetUrlsByUserQueryParams;
 };
 
-type Result = {
+type Result = PaginationResult<Url> & {
   type: 'GetUrlsByUserSuccess';
-  data: Url[];
 };
 
 @Injectable()
@@ -20,13 +22,18 @@ export class GetUrlsByUserService implements UseCase<Input, Result> {
   ) {}
 
   async execute(input: Input): Promise<Result> {
-    await this.userRepository.findByOrThrow({ id: input.id });
+    const { id, query } = input;
 
-    const data = await this.userRepository.findUrls(input.id);
+    await this.userRepository.findByOrThrow({ id });
+
+    const data = await this.userRepository.findUrls({
+      ...query,
+      id,
+    });
 
     return {
       type: 'GetUrlsByUserSuccess',
-      data,
+      ...data,
     };
   }
 }

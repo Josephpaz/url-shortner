@@ -10,7 +10,7 @@ export class RemoveUrlController {
 
   @ApiBearerAuth()
   @UseGuards(AuthGuard('jwt'))
-  @Delete(':id')
+  @Delete(':id/deactivate')
   async remove(@Param('id') id: string, @Req() req: { user: { id: string } }) {
     const userId = req.user?.id;
     return await this.removeUrlService.execute({ id, userId });
